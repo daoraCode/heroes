@@ -51,13 +51,13 @@ app.get('/heroes/:slug/powers', (req, res) => {
 const checkHero = (req, res, next) => {
     const { slug } = req.body;
     const heroe = superHeroes.find(heroe => heroe.slug === slug)
-  
+
     if (heroe) {
-      res.status(409).send("Existing hero")
+        res.status(409).send("Existing hero")
     } else {
-      next()
+        next()
     }
-  }
+};
 
 // route used to create and add a new heroe 
 app.post('/heroes', checkHero, (req, res) => {
@@ -69,18 +69,48 @@ app.post('/heroes', checkHero, (req, res) => {
     console.log(heroe);
 });
 
+// route used to delete an existing hero
+app.delete("/heroes/:slug", checkHero, (req, res) => {
+    const { slug } = req.params;
+    const heroe = superHeroes.findIndex(heroe => heroe.slug === slug);
+    // delete an array elm.
+    superHeroes.splice(heroe, 1);
+    res.status(200).json(`${slug} have been deleted correctly.`)
+});
+
+// route used to delete a power of a hero
+app.delete("/heroes/:slug/power/:power", checkHero, (req, res) => {
+    const { slug, power } = req.params;
+    const hero = superHeroes.findIndex(hero => hero.slug === slug);
+    // alt + z (command line to go to the next line)
+    const newPower = superHeroes[hero].power.find(pwr => pwr === power); 
+    // delete an array elm.
+    if (newPower) {
+        superHeroes[hero].power.splice(newPower, 1);
+        res.send(`The power ${newPower} of ${slug} have been erased.`);
+        res.json(superHeroes)
+    } else {
+        res.status(404).send("This power does not exists.")
+    }   
+});
+
+
+
 // route used to update/add powers to an existing heroe in the list
 app.put('/heroes/:slug/powers', (req, res) => {
     const { slug } = req.params;
     // power's heroe conqt variable declaration
     const { newPower } = req.body;
-    let heroe = superHeroes.find(superHeroe => superHeroe.slug === slug);
+    let hero = superHeroes.find(superHero => superHero.slug === slug);
     // create and add a new power for hero : destructuring power array to add new ones
-    heroe.power = [...heroe.power, newPower];
-    res.json(heroe);
-})
+    hero.power = [...hero.power, newPower];
+    res.json(hero);
+});
+
 
 // server launched (8000)
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
 });
+
+

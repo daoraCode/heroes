@@ -20,7 +20,7 @@
   {
     "slug": "dardevil",
     "name": "Daredevil",
-    "power": ["blind"],
+    "power": ["blind" ,"Dumb"],
     "color": "red",
     "isAlive": false,
     "age": 30,
