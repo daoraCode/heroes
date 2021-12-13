@@ -47,8 +47,20 @@ app.get('/heroes/:slug/powers', (req, res) => {
     res.json(power);
 });
 
-// route used to create and add a new heroe
-app.post('/heroes', (req, res) => {
+// route used to check if heroe already exists 
+const checkHero = (req, res, next) => {
+    const { slug } = req.body;
+    const heroe = superHeroes.find(heroe => heroe.slug === slug)
+  
+    if (heroe) {
+      res.status(409).send("Existing hero")
+    } else {
+      next()
+    }
+  }
+
+// route used to create and add a new heroe 
+app.post('/heroes', checkHero, (req, res) => {
     const heroe = {
         ...req.body
     }
@@ -60,11 +72,11 @@ app.post('/heroes', (req, res) => {
 // route used to update/add powers to an existing heroe in the list
 app.put('/heroes/:slug/powers', (req, res) => {
     const { slug } = req.params;
+    // power's heroe conqt variable declaration
+    const { newPower } = req.body;
     let heroe = superHeroes.find(superHeroe => superHeroe.slug === slug);
-    heroe.power = [
-        ...req.body,
-        ...heroe.power
-    ];
+    // create and add a new power for hero : destructuring power array to add new ones
+    heroe.power = [...heroe.power, newPower];
     res.json(heroe);
 })
 
